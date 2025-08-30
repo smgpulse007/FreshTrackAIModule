@@ -1,0 +1,19 @@
+[tool]
+name = "grocery-receipt-shelflife-service"
+version = "0.1.0"
+description = "A FastAPI microservice for processing grocery receipts and providing shelf-life recommendations."
+authors = ["Your Name <your.email@example.com>"]
+license = "MIT"
+
+[dependencies]
+fastapi = "^0.75.0"
+uvicorn = "^0.17.0"
+pillow = "^9.0.0"
+numpy = "^1.21.0"
+sentence-transformers = "^2.2.0"
+paddleocr = "^2.3.0"  # or pytesseract if you choose to use it
+pydantic = "^1.9.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

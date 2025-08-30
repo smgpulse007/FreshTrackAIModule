@@ -1,0 +1,14 @@
+FastAPI
+uvicorn
+pillow
+pytesseract
+paddleocr
+python-multipart
+sentence-transformers
+numpy
+scikit-learn
+pydantic
+httpx
+pytest
+pytest-asyncio
+sentry-sdk

@@ -1,0 +1,84 @@
+{
+  "items": [
+    {
+      "name": "Apples",
+      "shelf_life": {
+        "pantry": "1-2 weeks",
+        "fridge": "1-2 months",
+        "freezer": "Not recommended"
+      }
+    },
+    {
+      "name": "Bananas",
+      "shelf_life": {
+        "pantry": "2-7 days",
+        "fridge": "Not recommended",
+        "freezer": "2-3 months"
+      }
+    },
+    {
+      "name": "Carrots",
+      "shelf_life": {
+        "pantry": "3-5 days",
+        "fridge": "3-4 weeks",
+        "freezer": "10-12 months"
+      }
+    },
+    {
+      "name": "Chicken, raw",
+      "shelf_life": {
+        "pantry": "Not recommended",
+        "fridge": "1-2 days",
+        "freezer": "1 year"
+      }
+    },
+    {
+      "name": "Milk (pasteurized)",
+      "shelf_life": {
+        "pantry": "Not recommended",
+        "fridge": "1 week",
+        "freezer": "3 months"
+      }
+    },
+    {
+      "name": "Bread, commercial",
+      "shelf_life": {
+        "pantry": "5-7 days",
+        "fridge": "2-3 weeks",
+        "freezer": "3 months"
+      }
+    },
+    {
+      "name": "Eggs, raw",
+      "shelf_life": {
+        "pantry": "Not recommended",
+        "fridge": "3-5 weeks",
+        "freezer": "Not recommended"
+      }
+    },
+    {
+      "name": "Onion, fresh",
+      "shelf_life": {
+        "pantry": "1-2 months",
+        "fridge": "2-3 months",
+        "freezer": "Not recommended"
+      }
+    },
+    {
+      "name": "Potatoes",
+      "shelf_life": {
+        "pantry": "1-2 months",
+        "fridge": "Not recommended",
+        "freezer": "Not recommended"
+      }
+    },
+    {
+      "name": "Tomatoes",
+      "shelf_life": {
+        "pantry": "1 week",
+        "fridge": "1-2 weeks",
+        "freezer": "Not recommended"
+      }
+    }
+  ]
+}

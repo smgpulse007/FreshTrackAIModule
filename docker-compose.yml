@@ -1,0 +1,56 @@
+version: "3.9"
+services:
+  api-simple:
+    build:
+      context: .
+      dockerfile: Dockerfile.simple
+    image: receipt-simple:latest
+    ports:
+      - "8000:8000"
+
+  api-enhanced:
+    build:
+      context: .
+      dockerfile: Dockerfile.enhanced
+    image: receipt-enhanced:latest
+    ports:
+      - "8003:8000"
+
+  api-production:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: receipt-api:latest
+    ports:
+      - "8004:8000"
+    environment:
+      - ENVIRONMENT=production
+
+  api-cpu:
+    build:
+      context: .
+      dockerfile: Dockerfile.cpu
+    image: receipt-shelflife:cpu
+    environment:
+      - OCR_ENGINE=PaddleOCR
+    ports:
+      - "8001:8000"
+    deploy:
+      resources:
+        reservations: {}
+
+  api-gpu:
+    build:
+      context: .
+      dockerfile: Dockerfile.gpu
+    image: receipt-shelflife:gpu
+    environment:
+      - OCR_ENGINE=Tesseract
+    ports:
+      - "8002:8000"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+    runtime: nvidia

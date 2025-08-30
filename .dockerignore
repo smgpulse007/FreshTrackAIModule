@@ -1,0 +1,20 @@
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore environment variables
+.env
+
+# Ignore Docker-related files
+Dockerfile
+.dockerignore
+
+# Ignore local development files
+*.local
+
+# Ignore logs
+*.log
+
+# Ignore test output
+tests/__pycache__/
+tests/*.py[cod]

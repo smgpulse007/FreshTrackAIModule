@@ -1,0 +1,41 @@
+# Multi-stage build for better caching
+FROM python:3.11-slim as base
+
+ENV DEBIAN_FRONTEND=noninteractive \
+   PYTHONDONTWRITEBYTECODE=1 \
+   PYTHONUNBUFFERED=1
+
+# Install system dependencies (cached layer)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+   tesseract-ocr \
+   libgl1-mesa-glx \
+   libglib2.0-0 \
+   && rm -rf /var/lib/apt/lists/*
+
+# Create minimal requirements for faster builds
+FROM base as deps
+WORKDIR /srv
+
+# Copy only requirements first (better caching)
+COPY requirements.txt .
+
+# Install only essential dependencies
+RUN pip install --no-cache-dir \
+   fastapi \
+   uvicorn \
+   pillow \
+   pytesseract \
+   python-multipart \
+   pydantic
+
+# Final stage
+FROM deps as final
+WORKDIR /srv
+
+# Copy application code
+COPY app ./app
+
+EXPOSE 8000
+ENV OCR_ENGINE=Tesseract
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
