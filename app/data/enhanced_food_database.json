@@ -1,0 +1,162 @@
+[
+    {
+        "name": "Bread, commercial",
+        "category": "Bakery",
+        "pantry_shelf_life": "7-10 days",
+        "refrigerator_shelf_life": "3-4 weeks",
+        "freezer_shelf_life": "3-6 months",
+        "keywords": ["bread", "loaf", "wheat", "white", "whole grain", "gv", "great value"]
+    },
+    {
+        "name": "Peanut Butter",
+        "category": "Pantry",
+        "pantry_shelf_life": "6-12 months",
+        "refrigerator_shelf_life": "12 months",
+        "freezer_shelf_life": "Not recommended",
+        "keywords": ["peanut butter", "pnt buttr", "pb", "jif", "skippy", "planters"]
+    },
+    {
+        "name": "Coffee, ground",
+        "category": "Beverages",
+        "pantry_shelf_life": "3-5 months",
+        "refrigerator_shelf_life": "6 months",
+        "freezer_shelf_life": "12 months",
+        "keywords": ["coffee", "folgers", "maxwell", "ground", "espresso"]
+    },
+    {
+        "name": "Eggs, fresh",
+        "category": "Dairy",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "3-5 weeks",
+        "freezer_shelf_life": "12 months (beaten)",
+        "keywords": ["eggs", "dozen", "large", "cage free", "organic"]
+    },
+    {
+        "name": "Butter",
+        "category": "Dairy",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "3-4 months",
+        "freezer_shelf_life": "6-9 months",
+        "keywords": ["butter", "margarine", "spread"]
+    },
+    {
+        "name": "Milk, whole",
+        "category": "Dairy",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "5-7 days past date",
+        "freezer_shelf_life": "3 months",
+        "keywords": ["milk", "gallon", "2%", "whole", "skim", "1%", "organic"]
+    },
+    {
+        "name": "Cheese, shredded",
+        "category": "Dairy",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "3-4 weeks",
+        "freezer_shelf_life": "6-8 months",
+        "keywords": ["cheese", "shredded", "cheddar", "mozzarella", "parmesan", "parm"]
+    },
+    {
+        "name": "Chicken, fresh",
+        "category": "Meat & Seafood",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "1-2 days",
+        "freezer_shelf_life": "9-12 months",
+        "keywords": ["chicken", "breast", "thigh", "wing", "poultry", "chnk chkn"]
+    },
+    {
+        "name": "Ground beef",
+        "category": "Meat & Seafood",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "1-2 days",
+        "freezer_shelf_life": "3-4 months",
+        "keywords": ["ground beef", "hamburger", "beef", "80/20", "ground chuck"]
+    },
+    {
+        "name": "Bananas",
+        "category": "Produce",
+        "pantry_shelf_life": "2-7 days",
+        "refrigerator_shelf_life": "7-9 days",
+        "freezer_shelf_life": "2-3 months (peeled)",
+        "keywords": ["banana", "bananas", "4011"]
+    },
+    {
+        "name": "Apples",
+        "category": "Produce",
+        "pantry_shelf_life": "3-4 weeks",
+        "refrigerator_shelf_life": "4-6 weeks",
+        "freezer_shelf_life": "8-12 months",
+        "keywords": ["apple", "apples", "honeycrisp", "gala", "red delicious", "granny smith"]
+    },
+    {
+        "name": "Tomatoes",
+        "category": "Produce",
+        "pantry_shelf_life": "2-5 days",
+        "refrigerator_shelf_life": "1-2 weeks",
+        "freezer_shelf_life": "2-3 months",
+        "keywords": ["tomato", "tomatoes", "roma", "cherry", "grape"]
+    },
+    {
+        "name": "Onions",
+        "category": "Produce",
+        "pantry_shelf_life": "2-3 months",
+        "refrigerator_shelf_life": "3-4 months",
+        "freezer_shelf_life": "6-8 months",
+        "keywords": ["onion", "onions", "yellow", "white", "red", "sweet"]
+    },
+    {
+        "name": "Carrots",
+        "category": "Produce",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "3-4 weeks",
+        "freezer_shelf_life": "10-12 months",
+        "keywords": ["carrot", "carrots", "baby carrots"]
+    },
+    {
+        "name": "Pasta, dried",
+        "category": "Pantry",
+        "pantry_shelf_life": "2-3 years",
+        "refrigerator_shelf_life": "Not necessary",
+        "freezer_shelf_life": "Not necessary",
+        "keywords": ["pasta", "spaghetti", "penne", "rigatoni", "barilla", "noodles"]
+    },
+    {
+        "name": "Olive oil",
+        "category": "Pantry",
+        "pantry_shelf_life": "18-24 months",
+        "refrigerator_shelf_life": "24 months",
+        "freezer_shelf_life": "Not recommended",
+        "keywords": ["olive oil", "oil", "extra virgin", "cooking oil"]
+    },
+    {
+        "name": "Yogurt",
+        "category": "Dairy",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "1-2 weeks past date",
+        "freezer_shelf_life": "1-2 months",
+        "keywords": ["yogurt", "greek", "cups", "6pk", "chobani", "dannon"]
+    },
+    {
+        "name": "Frozen pizza",
+        "category": "Frozen",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "Not recommended",
+        "freezer_shelf_life": "12-18 months",
+        "keywords": ["frozen pizza", "pizza", "digiorno", "red baron"]
+    },
+    {
+        "name": "Salmon",
+        "category": "Meat & Seafood",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "1-2 days",
+        "freezer_shelf_life": "2-3 months",
+        "keywords": ["salmon", "fish", "fillet", "atlantic", "wild"]
+    },
+    {
+        "name": "Spinach",
+        "category": "Produce",
+        "pantry_shelf_life": "Not recommended",
+        "refrigerator_shelf_life": "7-10 days",
+        "freezer_shelf_life": "10-12 months",
+        "keywords": ["spinach", "organic spinach", "leafy greens"]
+    }
+]
