@@ -1,525 +1,108 @@
-# 🛒 FreshTrack AI Module - Intelligent Grocery Receipt OCR
+# FreshTrack AI Module
 
-A production-ready FastAPI service that uses **AI-powered OCR** to extract grocery items from receipt images and provides USDA-based shelf life information. Features **LLM-enhanced parsing** to eliminate false positives and improve accuracy.
+OCR + LLM-enhanced parsing FastAPI service for turning grocery receipt images into structured JSON outputs with confidence scoring and shelf-life lookup.
 
-![Python](https://img.shields.io/badge/python-3.11+-blue.svg)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)
-![Docker](https://img.shields.io/badge/docker-enabled-blue.svg)
-![License](https://img.shields.io/badge/license-MIT-green.svg)
-![AI](https://img.shields.io/badge/AI-Enhanced-purple.svg)
+> Portfolio demo only. This is a production-style reference implementation, not a live production integration. Do not upload or commit sensitive receipts, payment data, personal data, API keys, or private documents.
 
-## 🎯 **Key Features**
+## Problem
 
-- **🤖 LLM-Enhanced Parsing** - Intelligent filtering using OpenAI GPT or local models
-- **🔍 Advanced OCR** - Extracts grocery items from receipt images using Tesseract  
-- **📊 USDA Database** - Official shelf life data from USDA FoodKeeper
-- **🏪 Store Brand Recognition** - Handles Walmart Great Value, Kroger, Target brands
-- **🎨 Production Ready** - CORS, error handling, comprehensive API docs
-- **📱 Frontend Friendly** - Structured JSON responses with confidence scoring
-- **🗄️ Database Export** - Complete food database API for integration
-- **🚫 False Positive Filtering** - Eliminates receipt metadata, addresses, payment info
+Receipt OCR is noisy: store names, addresses, totals, payment lines, and manager names can be misread as grocery items. This project demonstrates a document/vision extraction pattern that combines OCR cleanup, domain matching, optional LLM-assisted parsing, and API-first JSON contracts.
 
-## 🧠 **LLM Intelligence**
+## Architecture
 
-The service now includes **LLM-powered parsing** that solves the major issues with traditional OCR:
-
-### **Problems Solved:**
-- ❌ **Before**: Store addresses matched as "Butter" 
-- ✅ **After**: Intelligent context understanding
-- ❌ **Before**: Manager names matched as "Bread"
-- ✅ **After**: Filters out non-food metadata  
-- ❌ **Before**: Payment info matched as food items
-- ✅ **After**: Distinguishes actual grocery products
-
-### **Available Parsing Methods:**
-1. **OpenAI GPT** (Highest Accuracy) - Set `OPENAI_API_KEY` environment variable
-2. **Local LLM** (Medium-High Accuracy) - Uses transformers library
-3. **Enhanced Rules** (Medium Accuracy) - Intelligent rule-based fallback
-
-## 🚀 **Quick Start**
-
-### **Option 1: LLM-Enhanced Service (Recommended)**
-
-```bash
-# Clone the repository
-git clone https://github.com/smgpulse007/FreshTrackAIModule.git
-cd FreshTrackAIModule
-
-# Option A: With OpenAI GPT (Best Accuracy)
-export OPENAI_API_KEY="your-api-key-here"
-docker-compose up api-llm -d
-
-# Option B: Local LLM Processing  
-docker-compose up api-llm -d
-
-# Test the enhanced API
-curl http://localhost:8005/api/v1/health
+```mermaid
+flowchart LR
+    A["Receipt image"] --> B["Image preprocessing"]
+    B --> C["Tesseract OCR"]
+    C --> D["Text cleanup and item matching"]
+    D --> E["Optional LLM parsing"]
+    E --> F["Shelf-life enrichment"]
+    F --> G["FastAPI JSON response"]
 ```
 
-### **Option 2: Production API (Fast & Reliable)**
+## What It Demonstrates
+
+- FastAPI service design with API docs.
+- OCR preprocessing and text parsing.
+- Optional LLM-assisted filtering for false-positive reduction.
+- USDA FoodKeeper-style shelf-life enrichment.
+- Confidence scoring and frontend-ready response contracts.
+- Dockerized service variants for local development.
+
+## Quick Start
+
+### Docker
 
 ```bash
-# Start the production API
-docker-compose up api-production -d
-
-# Test the API
+git clone https://github.com/smgpulse007/FreshTrackAIModule.git
+cd FreshTrackAIModule
+cp .env.example .env
+docker compose up api-production -d
 curl http://localhost:8004/api/v1/health
 ```
 
-### **Option 3: Local Development**
+### Local Python
 
 ```bash
-# Install dependencies (choose your parsing level)
-pip install -r requirements.txt        # Basic service
-pip install -r requirements-llm.txt    # LLM-enhanced
-
-# Start the API
-uvicorn app.api_main:app --host 0.0.0.0 --port 8004      # Production
-uvicorn app.llm_main:app --host 0.0.0.0 --port 8005      # LLM-enhanced
+python -m venv .venv
+.\.venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app.api_main:app --host 0.0.0.0 --port 8004
 ```
 
-## 📸 **Processing a Receipt**
+For optional LLM parsing:
 
-### **LLM-Enhanced Service (Port 8005)**
 ```bash
-# Upload a receipt image with intelligent parsing
-curl -X POST "http://localhost:8005/api/v1/receipt/process" \
-     -H "accept: application/json" \
-     -H "Content-Type: multipart/form-data" \
-     -F "file=@your_receipt.jpg"
-
-# Response includes filtered, intelligent results
-{
-  "success": true,
-  "total_items": 5,
-  "parsing_method": "openai",
-  "items": [
-    {
-      "raw_text": "GV PNT BUTTR 007874237003 F 3.84 N",
-      "normalized_name": "Great Value Peanut Butter",
-      "confidence": 0.95,
-      "category": "Pantry",
-      "price": 3.84,
-      "brand": "Great Value",
-      "is_food_item": true,
-      "shelf_life": {
-        "pantry_shelf_life": "6-12 months",
-        "refrigerator_shelf_life": "12 months"
-      }
-    }
-  ]
-}
+pip install -r requirements-llm.txt
+uvicorn app.llm_main:app --host 0.0.0.0 --port 8005
 ```
 
-### **Production Service (Port 8004)**
+Set `OPENAI_API_KEY` only in your local environment or `.env`; never commit real keys.
+
+## API Examples
+
 ```bash
-# Upload a receipt image
-curl -F "file=@your_receipt.jpg" http://localhost:8004/api/v1/receipt/process
+curl -F "file=@tests/sample_receipt.jpg" http://localhost:8004/api/v1/receipt/process
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "timestamp": "2025-08-30T21:22:31.036679",
-  "items_found": 4,
-  "items": [
-    {
-      "id": "item_001",
-      "raw_text": "BREAD 007225003712 F 2.88 N",
-      "food_name": "Bread, commercial",
-      "confidence": "high",
-      "shelf_life": {
-        "pantry": "14-18 days",
-        "fridge": "2-3 weeks",
-        "freezer": "3-5 months"
-      },
-      "category": "Bakery"
-    },
-    {
-      "id": "item_002",
-      "raw_text": "GV PNT BUTTR 007874237003 F 3.84 N",
-      "food_name": "Peanut Butter",
-      "confidence": "high",
-      "shelf_life": {
-        "pantry": "6-24 months",
-        "fridge": "2-3 months after opening",
-        "freezer": "Not recommended"
-      },
-      "category": "Pantry Staples"
-    }
-  ]
-}
-```
+Main endpoints:
 
-## 📋 **API Endpoints**
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| `POST` | `/api/v1/receipt/process` | Process receipt image |
-| `GET` | `/api/v1/food-database` | Get complete food database |
-| `GET` | `/api/v1/food-database/{item}` | Get specific food item |
-| `GET` | `/api/v1/categories` | Get food categories |
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/receipt/process` | Process a receipt image |
+| `GET` | `/api/v1/food-database` | Return shelf-life reference data |
+| `GET` | `/api/v1/categories` | Return food categories |
 | `GET` | `/api/v1/health` | Health check |
 
-**📚 Full API Documentation:** `http://localhost:8004/docs`
+Interactive docs run at `http://localhost:8004/docs`.
 
-## 🗄️ **Supabase Integration**
+## Validation
 
-### **Recommended Database Schema:**
-
-```sql
--- Receipt processing records
-CREATE TABLE receipt_scans (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  user_id UUID REFERENCES auth.users(id),
-  image_url TEXT,
-  processing_timestamp TIMESTAMPTZ,
-  items_found INTEGER,
-  raw_ocr_text TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- Individual food items from receipts
-CREATE TABLE receipt_items (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  receipt_scan_id UUID REFERENCES receipt_scans(id),
-  item_id TEXT, -- From API response
-  raw_text TEXT,
-  food_name TEXT,
-  confidence TEXT,
-  category TEXT,
-  pantry_life TEXT,
-  fridge_life TEXT,
-  freezer_life TEXT,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-```
-
-### **Frontend Integration Example:**
-
-```javascript
-// React/Next.js example
-const uploadReceipt = async (file) => {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  const response = await fetch('http://localhost:8004/api/v1/receipt/process', {
-    method: 'POST',
-    body: formData
-  });
-  
-  const result = await response.json();
-  
-  // Store in Supabase
-  const { data, error } = await supabase
-    .from('receipt_scans')
-    .insert({
-      items_found: result.items_found,
-      raw_ocr_text: result.raw_text_preview
-    });
-    
-  // Store individual items
-  for (const item of result.items) {
-    await supabase.from('receipt_items').insert({
-      receipt_scan_id: data.id,
-      item_id: item.id,
-      food_name: item.food_name,
-      confidence: item.confidence,
-      category: item.category,
-      pantry_life: item.shelf_life.pantry,
-      fridge_life: item.shelf_life.fridge,
-      freezer_life: item.shelf_life.freezer
-    });
-  }
-};
-```
-
-## Setup Instructions
-
-1. **Clone the Repository**:
-   ```
-git clone <repository-url>
-   cd grocery-receipt-shelflife-service
-```
-
-2. **Install Dependencies**:
-   It is recommended to use a virtual environment. You can create one using `venv` or `conda`.
-   ```
-pip install -r requirements.txt
-```
-
-3. **Run (Docker, recommended)**
-    - CPU:
-       ```
-docker compose up --build api-cpu
-```
-    - GPU (requires NVIDIA Container Toolkit):
-       ```
-docker compose up --build api-gpu
-```
-    The API will be available at `http://localhost:8000`.
-
-4. **Access the API**:
-   The API will be available at `http://127.0.0.1:8000`. You can use tools like Postman or curl to interact with the endpoints.
-
-## 🏗️ **Architecture**
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │────│   FastAPI       │────│   USDA Data     │
-│   (React/Next)  │    │   Service       │    │   (FoodKeeper)  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                        │                        │
-         │                        │                        │
-         ▼                        ▼                        ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Supabase      │    │   Tesseract     │    │   80+ Food      │
-│   Database      │    │   OCR Engine    │    │   Items         │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 🔧 **Development**
-
-### **Project Structure:**
-```
-grocery-receipt-ocr-api/
-├── app/
-│   ├── api_main.py          # Production API
-│   ├── enhanced_main.py     # Enhanced service
-│   ├── simple_main.py       # Simple service
-│   └── data/
-│       ├── foodkeeper.json  # Food database
-│       └── FOOD-STORAGE-TIMES-.pdf
-├── tests/
-│   ├── sample_receipt.jpg   # Test receipt
-│   ├── test_api.py
-│   └── test_ocr.py
-├── docker-compose.yml       # Multi-service setup
-├── requirements.txt
-└── README.md
-```
-
-### **Available Services:**
-- **Port 8004:** Production API (recommended)
-- **Port 8003:** Enhanced service
-- **Port 8000:** Simple service
-- **Port 8001:** CPU-optimized service
-- **Port 8002:** GPU service
-
-### **Running Tests:**
 ```bash
-# Test with sample receipt
-curl -F "file=@tests/sample_receipt.jpg" http://localhost:8004/api/v1/receipt/process
-
-# Get food database
-curl http://localhost:8004/api/v1/food-database
-
-# Check specific item
-curl "http://localhost:8004/api/v1/food-database/Peanut%20Butter"
+python -m pytest tests
+python -m compileall app scripts
 ```
 
-## 📊 **Performance**
+Some OCR/LLM checks may require local Tesseract binaries or optional LLM dependencies.
 
-- **Processing Speed:** 2-3 seconds per receipt
-- **Accuracy:** 90%+ for major grocery items
-- **Supported Formats:** JPG, PNG, WEBP
-- **Max Image Size:** 10MB
-- **Concurrent Requests:** 100+ (with Docker)
+## Privacy And Safety
 
-## 🎯 **Proven Results**
+- The checked-in test receipt is synthetic/sample test data.
+- Do not commit uploaded receipts or `.env` files.
+- Treat receipt images as potentially sensitive because they can contain store, payment, timestamp, or location details.
+- Review extracted output before storing or using it downstream.
 
-✅ **Successfully processes Walmart receipts:**
-- **BREAD** → Bread, commercial (high confidence)
-- **GV PNT BUTTR** → Peanut Butter (high confidence)
-- **FOLGERS** → Coffee, ground (high confidence)
-- **EGGS** → Eggs, fresh (high confidence)
+## Limitations
 
-## 🛠️ **Requirements**
+- Optional OpenAI-backed parsing requires a locally supplied API key.
+- OCR quality depends on image resolution, lighting, receipt formatting, and Tesseract availability.
+- The Supabase/frontend references are integration patterns, not a hosted production deployment.
+- No production authentication, tenant isolation, audit logging, or retention policy is included.
 
-- **Python 3.11+**
-- **Tesseract OCR**
-- **Docker & Docker Compose** (recommended)
-- **2GB RAM minimum**
+## Portfolio Relevance
 
-## 📝 **License**
+Demonstrates OCR cleanup, LLM-assisted parsing, confidence scoring, API design, Dockerized service delivery, and frontend-ready JSON contracts that transfer to regulated document AI workflows.
 
-MIT License - see [LICENSE](LICENSE) file for details.
+## License
 
-## 🤝 **Contributing**
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 🆘 **Support**
-
-- **Documentation:** [API_Documentation.md](API_Documentation.md)
-- **Interactive Docs:** `http://localhost:8004/docs`
-- **Issues:** Create a GitHub issue
-- **Email:** your-email@example.com
-
----
-
-**Ready for production use with Supabase integration! 🚀**ost:8004/api/v1/receipt/process', {
-    method: 'POST',
-    body: formData
-  });
-  
-  const result = await response.json();
-  
-  // Store in Supabase
-  const { data, error } = await supabase
-    .from('receipt_scans')
-    .insert({
-      items_found: result.items_found,
-      raw_ocr_text: result.raw_text_preview
-    });
-    
-  // Store individual items
-  for (const item of result.items) {
-    await supabase.from('receipt_items').insert({
-      receipt_scan_id: data.id,
-      item_id: item.id,
-      food_name: item.food_name,
-      confidence: item.confidence,
-      category: item.category,
-      pantry_life: item.shelf_life.pantry,
-      fridge_life: item.shelf_life.fridge,
-      freezer_life: item.shelf_life.freezer
-    });
-  }
-};
-```
-
-## Setup Instructions
-
-1. **Clone the Repository**:
-   ```
-   git clone <repository-url>
-   cd grocery-receipt-shelflife-service
-   ```
-
-2. **Install Dependencies**:
-   It is recommended to use a virtual environment. You can create one using `venv` or `conda`.
-   ```
-   pip install -r requirements.txt
-   ```
-
-3. **Run (Docker, recommended)**
-    - CPU:
-       ```
-       docker compose up --build api-cpu
-       ```
-    - GPU (requires NVIDIA Container Toolkit):
-       ```
-       docker compose up --build api-gpu
-       ```
-    The API will be available at `http://localhost:8000`.
-
-4. **Access the API**:
-   The API will be available at `http://127.0.0.1:8000`. You can use tools like Postman or curl to interact with the endpoints.
-
-## 🏗️ **Architecture**
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │────│   FastAPI       │────│   USDA Data     │
-│   (React/Next)  │    │   Service       │    │   (FoodKeeper)  │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         │                        │                        │
-         │                        │                        │
-         ▼                        ▼                        ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Supabase      │    │   Tesseract     │    │   80+ Food      │
-│   Database      │    │   OCR Engine    │    │   Items         │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
-
-## 🔧 **Development**
-
-### **Project Structure:**
-```
-grocery-receipt-ocr-api/
-├── app/
-│   ├── api_main.py          # Production API
-│   ├── enhanced_main.py     # Enhanced service
-│   ├── simple_main.py       # Simple service
-│   └── data/
-│       ├── foodkeeper.json  # Food database
-│       └── FOOD-STORAGE-TIMES-.pdf
-├── tests/
-│   ├── sample_receipt.jpg   # Test receipt
-│   ├── test_api.py
-│   └── test_ocr.py
-├── docker-compose.yml       # Multi-service setup
-├── requirements.txt
-└── README.md
-```
-
-### **Available Services:**
-- **Port 8004:** Production API (recommended)
-- **Port 8003:** Enhanced service
-- **Port 8000:** Simple service
-- **Port 8001:** CPU-optimized service
-- **Port 8002:** GPU service
-
-### **Running Tests:**
-```bash
-# Test with sample receipt
-curl -F "file=@tests/sample_receipt.jpg" http://localhost:8004/api/v1/receipt/process
-
-# Get food database
-curl http://localhost:8004/api/v1/food-database
-
-# Check specific item
-curl "http://localhost:8004/api/v1/food-database/Peanut%20Butter"
-```
-
-## 📊 **Performance**
-
-- **Processing Speed:** 2-3 seconds per receipt
-- **Accuracy:** 90%+ for major grocery items
-- **Supported Formats:** JPG, PNG, WEBP
-- **Max Image Size:** 10MB
-- **Concurrent Requests:** 100+ (with Docker)
-
-## 🎯 **Proven Results**
-
-✅ **Successfully processes Walmart receipts:**
-- **BREAD** → Bread, commercial (high confidence)
-- **GV PNT BUTTR** → Peanut Butter (high confidence)
-- **FOLGERS** → Coffee, ground (high confidence)
-- **EGGS** → Eggs, fresh (high confidence)
-
-## 🛠️ **Requirements**
-
-- **Python 3.11+**
-- **Tesseract OCR**
-- **Docker & Docker Compose** (recommended)
-- **2GB RAM minimum**
-
-## 📝 **License**
-
-MIT License - see [LICENSE](LICENSE) file for details.
-
-## 🤝 **Contributing**
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## 🆘 **Support**
-
-- **Documentation:** [API_Documentation.md](API_Documentation.md)
-- **Interactive Docs:** `http://localhost:8004/docs`
-- **Issues:** Create a GitHub issue
-- **Email:** your-email@example.com
-
----
-
-**Ready for production use with Supabase integration! 🚀**
+MIT License. See [LICENSE](LICENSE).
