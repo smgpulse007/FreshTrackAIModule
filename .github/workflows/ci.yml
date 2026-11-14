@@ -36,7 +36,7 @@ jobs:
         run: |
           docker run -d -p 127.0.0.1:8004:8000 --name test-api freshtrack-api:test
           trap 'docker rm -f test-api' EXIT
-          curl --fail --retry 30 --retry-connrefused --retry-delay 1 http://127.0.0.1:8004/health
+          curl --fail --retry 30 --retry-all-errors --retry-delay 1 --max-time 2 --retry-max-time 45 http://127.0.0.1:8004/health
           docker exec test-api python scripts/smoke_receipt.py
   security-scan:
     runs-on: ubuntu-latest
