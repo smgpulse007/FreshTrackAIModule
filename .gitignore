@@ -182,3 +182,7 @@ secrets/
 # Uploaded files for testing
 uploads/
 temp/
+
+# Local browser verification artifacts
+.playwright-cli/
+output/playwright/

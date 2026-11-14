@@ -1,108 +1,95 @@
-# FreshTrack AI Module
+# FreshTrack Lab
 
-OCR + LLM-enhanced parsing FastAPI service for turning grocery receipt images into structured JSON outputs with confidence scoring and shelf-life lookup.
+Turn a grocery receipt into inspectable JSON: **read the image, review each match, export the result.** A small FastAPI app with a browser interface, local Tesseract OCR, and deterministic grocery matching.
 
-> Portfolio demo only. This is a production-style reference implementation, not a live production integration. Do not upload or commit sensitive receipts, payment data, personal data, API keys, or private documents.
+No API key or model download is needed for the primary app. The built-in synthetic example runs without the Tesseract binary, and clearly identifies itself as a text fixture rather than OCR output.
 
-## Problem
+![FreshTrack receipt review interface showing three items from the labeled synthetic text fixture](docs/receipt-demo.png)
 
-Receipt OCR is noisy: store names, addresses, totals, payment lines, and manager names can be misread as grocery items. This project demonstrates a document/vision extraction pattern that combines OCR cleanup, domain matching, optional LLM-assisted parsing, and API-first JSON contracts.
+## Try it locally
 
-## Architecture
-
-```mermaid
-flowchart LR
-    A["Receipt image"] --> B["Image preprocessing"]
-    B --> C["Tesseract OCR"]
-    C --> D["Text cleanup and item matching"]
-    D --> E["Optional LLM parsing"]
-    E --> F["Shelf-life enrichment"]
-    F --> G["FastAPI JSON response"]
-```
-
-## What It Demonstrates
-
-- FastAPI service design with API docs.
-- OCR preprocessing and text parsing.
-- Optional LLM-assisted filtering for false-positive reduction.
-- USDA FoodKeeper-style shelf-life enrichment.
-- Confidence scoring and frontend-ready response contracts.
-- Dockerized service variants for local development.
-
-## Quick Start
-
-### Docker
-
-```bash
-git clone https://github.com/smgpulse007/FreshTrackAIModule.git
-cd FreshTrackAIModule
-cp .env.example .env
-docker compose up api-production -d
-curl http://localhost:8004/api/v1/health
-```
-
-### Local Python
+Python 3.11 is the tested runtime. Create and activate a virtual environment:
 
 ```bash
 python -m venv .venv
-.\.venv\Scripts\activate
-pip install -r requirements.txt
-uvicorn app.api_main:app --host 0.0.0.0 --port 8004
+# macOS/Linux
+source .venv/bin/activate
+# Windows PowerShell, instead
+.\.venv\Scripts\Activate.ps1
 ```
 
-For optional LLM parsing:
+Then install and start:
 
 ```bash
-pip install -r requirements-llm.txt
-uvicorn app.llm_main:app --host 0.0.0.0 --port 8005
+python -m pip install -r requirements-api.txt
+python -m uvicorn app.api_main:app --host 127.0.0.1 --port 8004
 ```
 
-Set `OPENAI_API_KEY` only in your local environment or `.env`; never commit real keys.
+Open **http://127.0.0.1:8004** and choose **Try the synthetic example**. Review the source lines, matching labels, and storage references, then download JSON. API docs are at `/docs`.
 
-## API Examples
+To extract an image, install the [Tesseract binary](https://tesseract-ocr.github.io/tessdoc/Installation.html) and put it on `PATH`; `pytesseract` alone does not include it. Use synthetic images without personal or payment data. A missing binary produces an actionable `503` response. Docker includes Tesseract:
 
 ```bash
-curl -F "file=@tests/sample_receipt.jpg" http://localhost:8004/api/v1/receipt/process
+docker build -f Dockerfile.api -t freshtrack-api .
+docker run --rm -p 127.0.0.1:8004:8000 freshtrack-api
 ```
 
-Main endpoints:
+## How it works
 
-| Method | Endpoint | Purpose |
+```mermaid
+flowchart LR
+    A[Receipt image] --> B[Tesseract OCR]
+    S[Labeled synthetic text fixture] --> C
+    B --> C[Filter lines and match complete aliases]
+    C --> D[Deduplicate grocery names]
+    D --> E[Review source text and storage references]
+    E --> F[Download JSON]
+```
+
+The browser is a self-contained HTML/CSS/JavaScript page with no external fonts, analytics, or UI build step. Requests stay between the browser and the running API. The UI and API share an origin; cross-origin browser access is not enabled by default. The API does not intentionally persist uploaded images; multipart handling may use temporary files. Deploying this app on another machine sends uploads to that server.
+
+Matching uses complete aliases, preferring the longest phrase. For example, `WHOLE MILK 4.00` matches milk, `GV BUTTER 3.00` matches butter, and `PINEAPPLE` does not match the `apple` alias. This is a bounded rule system, not a trained classifier. Unsupported lines are omitted from matched items; the first 500 characters of extracted text remain available for inspection.
+
+## API
+
+| Method | Path | Behavior |
 | --- | --- | --- |
-| `POST` | `/api/v1/receipt/process` | Process a receipt image |
-| `GET` | `/api/v1/food-database` | Return shelf-life reference data |
-| `GET` | `/api/v1/categories` | Return food categories |
-| `GET` | `/api/v1/health` | Health check |
-
-Interactive docs run at `http://localhost:8004/docs`.
-
-## Validation
+| GET | `/` | Receipt review interface |
+| POST | `/api/v1/receipt/demo` | Fixed synthetic text through the matching pipeline; no OCR |
+| POST | `/api/v1/receipt/process` | Decode an image, OCR it, return matches and source lines |
+| GET | `/api/v1/food-database` | Existing static storage reference table |
+| GET | `/api/v1/categories` | Reference categories |
+| GET | `/api/v1/health` | API liveness; does not certify OCR availability |
 
 ```bash
-python -m pytest tests
-python -m compileall app scripts
+curl -X POST http://127.0.0.1:8004/api/v1/receipt/demo
+curl -F "file=@synthetic-receipt.png" http://127.0.0.1:8004/api/v1/receipt/process
 ```
 
-Some OCR/LLM checks may require local Tesseract binaries or optional LLM dependencies.
+The response includes `items`, `raw_text_preview`, and `processing_info.mode`: `synthetic_fixture` or `uploaded_image`. Each item retains its source line. Confidence labels are heuristics, **not calibrated probabilities**. Empty or undecodable images return `400`, missing uploads `422`, and images exceeding 10 MiB or 20 megapixels `413`. OCR subprocesses have a 30-second timeout. The size check is an application-level image limit, not an HTTP gateway or rate limit.
 
-## Privacy And Safety
+## Run the checks
 
-- The checked-in test receipt is synthetic/sample test data.
-- Do not commit uploaded receipts or `.env` files.
-- Treat receipt images as potentially sensitive because they can contain store, payment, timestamp, or location details.
-- Review extracted output before storing or using it downstream.
+```bash
+python -m pip install -r requirements-test.txt
+python -m pytest -q
+python -m compileall -q app scripts/smoke_receipt.py
+```
 
-## Limitations
+The default suite targets the documented `app.api_main` entrypoint and deterministic matching: synthetic fixture labeling, image decoding, upload limits, OCR failure responses, alias boundaries, source evidence, deduplication, and reference endpoints. OCR is stubbed in unit tests; no model, API key, or external service is called.
 
-- Optional OpenAI-backed parsing requires a locally supplied API key.
-- OCR quality depends on image resolution, lighting, receipt formatting, and Tesseract availability.
-- The Supabase/frontend references are integration patterns, not a hosted production deployment.
-- No production authentication, tenant isolation, audit logging, or retention policy is included.
+The Docker CI job also runs `scripts/smoke_receipt.py` inside the container against port 8000. It generates a receipt image in memory and asserts that the real OCR upload route finds apples, bread, and milk. This small smoke fixture is not an accuracy benchmark.
 
-## Portfolio Relevance
+Earlier experiments remain in the repository: `app.main` uses embedding/PaddleOCR services; `app.llm_main` has optional LLM integrations. The legacy `tests/test_api.py`, `tests/test_ocr.py`, and `tests/test_llm_service.py` are outside the default test selection because they need separate models, data, binaries, or running services. They are not validated by the lightweight suite. `requirements.txt` and `requirements-llm.txt` belong to those experiments; the primary app and its Docker image use `requirements-api.txt`.
 
-Demonstrates OCR cleanup, LLM-assisted parsing, confidence scoring, API design, Dockerized service delivery, and frontend-ready JSON contracts that transfer to regulated document AI workflows.
+## Scope and limitations
+
+- Review every match. OCR quality depends on the image; the alias list is small and does not track quantities, prices, or every grocery category.
+- The existing storage table is illustrative reference data, not a verified current FoodKeeper dataset or a food-safety assessment. Follow packaging and current authoritative guidance.
+- No production authentication, tenant isolation, rate limiting, retention policy, or calibrated extraction accuracy is provided. Run locally for evaluation.
+- Do not upload or commit private receipts, payment data, personal data, keys, or employer documents. The built-in text fixture and CI-generated image are synthetic; the provenance of older bundled receipt images has not been independently verified.
+- No LLM is called in the primary API. Optional legacy OpenAI integrations require separate API credentials and may incur API charges; a ChatGPT subscription is not used by this app.
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+[MIT](LICENSE).
