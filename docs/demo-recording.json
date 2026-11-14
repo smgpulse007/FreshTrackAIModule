@@ -1,0 +1,43 @@
+{
+  "assembled_at_utc": "2026-11-14T04:01:07.510222+00:00",
+  "method": "Actual local app screenshots captured with Playwright CLI / isolated Microsoft Edge",
+  "fixture": "Built-in synthetic text; no OCR or model inference",
+  "viewport": [
+    1280,
+    960
+  ],
+  "frame_durations_ms": [
+    2300,
+    4200,
+    4000,
+    2000
+  ],
+  "frames": [
+    {
+      "file": "output/playwright/gif-01.png",
+      "sha256": "1c5e8a7957a66269adfcf8f13a222c2e29514bce03f12105305160e2b355db06"
+    },
+    {
+      "file": "output/playwright/gif-02.png",
+      "sha256": "4473d24418576c1a134ca4802ba641372fff876d48bce8d28bc714754943a1eb"
+    },
+    {
+      "file": "output/playwright/gif-03.png",
+      "sha256": "aa77fd884c44a0a75773b16d8ddf26af8ee23fa4afdf4dc01fd301b531bff5f3"
+    },
+    {
+      "file": "output/playwright/gif-04.png",
+      "sha256": "aa77fd884c44a0a75773b16d8ddf26af8ee23fa4afdf4dc01fd301b531bff5f3"
+    }
+  ],
+  "source_sha256": {
+    "app/api_main.py": "97323c055f8422f53eeec528fcf3a0bb7328848fb8ef9ad23874181a48dc7200",
+    "app/static/index.html": "339c5613dbbb0a9acd4f1edc44dc4e6c38b08b0ce91dd34fb918554f4361ae2d"
+  },
+  "download": {
+    "mode": "synthetic_fixture",
+    "item_count": 3,
+    "sha256": "654d8c465415d5516256d33580283b93d3bf83347e8ada804a47a9903c132786"
+  },
+  "gif_sha256": "98c4e1c43974753e171d0fb8e7d56c60b9d5f60b2079d08f8844261a1b578902"
+}

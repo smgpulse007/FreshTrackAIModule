@@ -1,7 +1,10 @@
-from typing import List, Tuple
+from __future__ import annotations
+from typing import TYPE_CHECKING, List, Tuple
 import re
-from app.services.embedding_service import EmbeddingService
 from app.services.shelf_life_service import ShelfLifeService
+
+if TYPE_CHECKING:
+    from app.services.embedding_service import EmbeddingService
 
 
 class MatchingService:

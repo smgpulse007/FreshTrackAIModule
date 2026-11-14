@@ -1,0 +1,6 @@
+# Dependencies for app.api_main and its browser demo; no model downloads.
+fastapi==0.162.7
+uvicorn==0.54.0
+pillow==13.0.0
+pytesseract==0.3.13
+python-multipart==0.0.33

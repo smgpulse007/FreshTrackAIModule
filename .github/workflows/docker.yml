@@ -14,6 +14,8 @@ env:
 
 jobs:
   build-and-push:
+    # Pull requests are built and exercised by ci.yml; only existing push events publish.
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -21,7 +23,11 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+    - name: Normalize container image name
+      id: image
+      run: echo "name=${GITHUB_REPOSITORY,,}" >> "$GITHUB_OUTPUT"
 
     - name: Log in to Container Registry
       uses: docker/login-action@v2
@@ -37,7 +43,6 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
           type=ref,event=branch
-          type=ref,event=pr
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
 
@@ -56,12 +61,14 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: Build CPU-only image
+      # The legacy app is a separate release artifact, not the reviewed primary API.
+      if: startsWith(github.ref, 'refs/tags/v')
       uses: docker/build-push-action@v4
       with:
         context: .
         file: ./Dockerfile.simple
         push: true
-        tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:cpu-latest
+        tags: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:cpu-latest
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
