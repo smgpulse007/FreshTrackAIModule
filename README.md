@@ -4,7 +4,9 @@ Turn a grocery receipt into inspectable JSON: **read the image, review each matc
 
 No API key or model download is needed for the primary app. The built-in synthetic example runs without the Tesseract binary, and clearly identifies itself as a text fixture rather than OCR output.
 
-![FreshTrack receipt review interface showing three items from the labeled synthetic text fixture](docs/receipt-demo.png)
+![FreshTrack running locally: load the synthetic receipt, review three matches, inspect source text, and download JSON](docs/receipt-demo.gif)
+
+Recorded from the running app with its labeled synthetic fixture; this flow does not run OCR. [Recording details](docs/record-demo.md) · [Still image](docs/receipt-demo.png)
 
 ## Try it locally
 

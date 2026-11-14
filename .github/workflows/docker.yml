@@ -43,7 +43,6 @@ jobs:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
           type=ref,event=branch
-          type=ref,event=pr
           type=semver,pattern={{version}}
           type=semver,pattern={{major}}.{{minor}}
 
@@ -62,6 +61,8 @@ jobs:
         cache-to: type=gha,mode=max
 
     - name: Build CPU-only image
+      # The legacy app is a separate release artifact, not the reviewed primary API.
+      if: startsWith(github.ref, 'refs/tags/v')
       uses: docker/build-push-action@v4
       with:
         context: .
